@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Спасибо за заказ!{% endblock %}
+
+{% block head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static "style.css" %}">
+{% endblock %}
+
+{% block content %}
+    <div class="thanks-block">
+        <h1>Спасибо за заказ!</h1>
+        <p>Запрос отправлен администратору. С Вами свяжутся в ближайшее время!</p>
+    </div>
+{% endblock %}

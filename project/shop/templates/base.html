@@ -1,0 +1,97 @@
+<!DOCTYPE html>{% load static %}
+<html lang="en">
+
+{% block head %}
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="stylesheet" href="{% static "bootstrap.min.css" %}">
+        <link rel="stylesheet" href="{% static "main.css" %}">
+    </head>
+{% endblock %}
+
+{% block body %}
+    <body class="" data-gr-c-s-loaded="true">
+
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="/">Просто магазин</a>
+        <img src="{% static "logo.svg" %}" alt="" width="42" height="42">
+        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">
+                        Главная</a>
+                </li>
+
+                {% block nav %}
+                    {% for section_ in all_sections %}
+                        {% if section_.subsection_count != 0 %}
+                            <li class="nav-item dropdown {% if section and section_ == section %}active{% endif %}">
+                                <a class="nav-link dropdown-toggle" href="#" id="dropdown01"#}
+                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {{ section_ }}</a>
+                                <div class="dropdown-menu" aria-labelledby="dropdown01">
+
+                                    {% for subsection in all_subsections %}
+                                        {% if subsection.section == section_ %}
+                                            <a class="dropdown-item" href="/catalog/{{ section_.slug }}/{{ subsection.slug }}">
+                                                {{ subsection }}</a>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                </div>
+                            </li>
+                        {% else %}
+                            <li class="nav-item {% if section_ == section %}active{% endif %}" >
+                                <a class="nav-link" href="/catalog/{{ section_.slug }}">{{ section_ }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                {% endblock %}
+
+            </ul>
+
+            <a class="btn btn-outline-success my-2 my-sm-0" role="button" href="/cart/">
+                Корзина
+            </a>
+
+            {% if not request.user.is_authenticated %}
+                <a class="btn btn-outline-success my-2 my-sm-0" role="button" href="/login/">
+                    Войти
+                </a>
+            {% else %}
+                <a class="btn btn-outline-success my-2 my-sm-0" role="button" href="/logout/">
+                    Выйти из {{ request.user.username }}
+                </a>
+            {% endif %}
+
+            <a class="btn btn-success my-2 my-sm-0" role="button" href="/signup/">
+                Зарегистроваться
+            </a>
+
+        </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    <hr>
+    <footer class="container">
+        <p>© Просто магазин 2018</p>
+    </footer>
+
+    {% block scripts %}
+        <script src="{% static 'jquery-3.3.1.slim.min.js'%}"></script>
+        <script src="{% static 'popper.min.js'%}"></script>
+        <script src="{% static 'bootstrap.min.js'%}"></script>
+    {% endblock %}
+
+    </body>
+{% endblock %}
+</html>

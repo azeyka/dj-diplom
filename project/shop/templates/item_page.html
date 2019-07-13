@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+{% load filters %}
+{% load widget_tweaks %}
+{% block title %}{{ subsection }}{% endblock %}
+
+{% block content %}
+    <main role="main">
+        <div class="container mt-3">
+            <!-- Example row of columns -->
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>{{ item.name }}</h2>
+
+                    <img src="{% static item.img.url %}" width="120">
+
+                    <p>{{ item.description }}</p>
+                    <form method="post" action="/add_to_cart/?from={{ request.path }}&id={{ item.id }}">
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-secondary" value="Добавить в корзину »">
+                    </form>
+                </div>
+            </div>
+            <hr>
+
+            {% for review in reviews %}
+                {{ review.stars|convert_stars }}
+                <span>{{ review.name }}</span>
+                <p>{{ review.text }}</p>
+            {% endfor %}
+
+            <hr>
+
+            <div class="row">
+                <div class="col-lg-6 col-md-8 col-sm-12">
+                    <h4>Оставте отзыв:</h4>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            {{ form.name.label_tag }}
+                            {{ form.name|add_class:"form-control"|attr:"placeholder:Представтесь" }}
+                            {{ form.name.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.text.label_tag }}
+                            {{ form.text|add_class:"form-control"|attr:"placeholder:Содержание" }}
+                            {{ form.text.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            {% for star in form.stars %}
+                                <div class="form-check">{{ star }}</div>
+                            {% endfor %}
+                            {{ form.stars.errors }}
+                        </div>
+
+                        <button class="btn btn-primary" type="submit">Оставить</button>
+                    </form>
+                </div>
+            </div>
+        </div> <!-- /container -->
+    </main>
+{% endblock %}
