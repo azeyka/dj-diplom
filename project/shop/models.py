@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 class Item(models.Model):
     name = models.CharField(max_length=50, verbose_name='Наименование')
     subsection = models.ForeignKey('Subsection', verbose_name='Подраздел', on_delete=models.SET_NULL, null=True)
-    img = models.ImageField(verbose_name='Изображение')
+    img = models.ImageField(verbose_name='Изображение', upload_to='/images')
     description = models.TextField(verbose_name='Описание товара', null=True)
     slug = models.SlugField(null=True)
     

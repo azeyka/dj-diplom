@@ -38,7 +38,6 @@ def subsection_view(request, section_name, subsection_name=None):
     if subsection_name:
         subsection = get_object_or_404(Subsection, slug=subsection_name)
         curr_page = request.GET.get('page') or 1
-        print(curr_page)
         curr_items = subsection.paginator().get_page(curr_page)
         
         template = 'subsection_page.html'
@@ -79,7 +78,7 @@ def item_view(request, section_name, subsection_name, item_name):
 
 def login(request):
     form = LoginForm()
-    error = False
+    is_error = False
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -92,10 +91,10 @@ def login(request):
 
                     return redirect(f'/')
                 else:
-                    error = True
+                    is_error = True
                     
             except User.DoesNotExist:
-                error = True
+                is_error = True
 
                 
     return render(
@@ -103,7 +102,7 @@ def login(request):
         'login.html',
         {
             'form': form,
-            'error': error
+            'is_error': is_error
         }
     )
 
