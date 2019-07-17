@@ -1,8 +1,6 @@
-# Дипломный проект по курсу «Django: создание функциональных веб-приложений»
+## Для запуска проекта необходимо:
 
-Для запуска проекта необходимо:
-
-* Установить Django Widget Tweaks: pip install django-widget-tweaks
+* Установить Django Widget Tweaks
 ```bash
 pip install django-widget-tweaks
 ```
