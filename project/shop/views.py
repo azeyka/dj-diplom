@@ -4,7 +4,7 @@ from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.models import User
 from datetime import datetime
 
-from shop.models import Section, Item, Article, Review, User, Cart, Order, OderedItem
+from shop.models import Section, Item, Article, Review, User, Order, OderedItem
 from shop.forms import ReviewForm, LoginForm, SignupForm
 
 
@@ -115,8 +115,7 @@ def signup(request):
             username = form.cleaned_data['email']
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            user = User.objects.create_user(email=email, password=password, username=username)
-            # User.objects.create(email=email, password=password, username=username)
+            User.objects.create_user(email=email, password=password, username=username)
             return redirect('/login/')
     
     return render(

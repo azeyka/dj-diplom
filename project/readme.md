@@ -1,8 +1,8 @@
 ## Для запуска проекта необходимо:
 
-* Установить Django Widget Tweaks
+* Установить зависимости
 ```bash
-pip install django-widget-tweaks
+pip install -r requirements.txt
 ```
 
 * Созданть миграции приложения для базы данных
