@@ -1,4 +1,7 @@
 db.sqlite3
 .idea
-images/*
-!images/.gitkeep
+*.jpeg
+*.jpg
+*.webp
+*.gif
+

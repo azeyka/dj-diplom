@@ -1,13 +1,13 @@
 from django.db import models
 from pytils.translit import slugify
 from django.core.paginator import Paginator
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
 
 class Item(models.Model):
     name = models.CharField(max_length=50, verbose_name='Наименование')
-    subsection = models.ForeignKey('Subsection', verbose_name='Подраздел', on_delete=models.SET_NULL, null=True)
-    img = models.ImageField(verbose_name='Изображение', upload_to='/images')
+    section = models.ForeignKey('Section', verbose_name='Раздел', on_delete=models.SET_NULL, null=True)
+    img = models.ImageField(verbose_name='Изображение')
     description = models.TextField(verbose_name='Описание товара', null=True)
     slug = models.SlugField(null=True)
     
@@ -20,6 +20,8 @@ class Item(models.Model):
 
 class Section(models.Model):
     name = models.CharField(max_length=50, verbose_name='Название')
+    parent = models.ForeignKey('Section', verbose_name='Родительский раздел', on_delete=models.SET_NULL,
+                               parent_link=True, null=True, blank=True)
     slug = models.SlugField(null=True)
     
     class Meta:
@@ -29,38 +31,28 @@ class Section(models.Model):
     def __str__(self):
         return self.name
     
+    def subsections(self):
+        return Section.objects.all().filter(parent=self)
+    
     def subsection_count(self):
-        return Subsection.objects.filter(section=self).count()
-    
-    def items_count(self):
-        return Item.objects.filter(subsection__section=self).count()
-
-class Subsection(models.Model):
-    name = models.CharField(max_length=50, verbose_name='Название')
-    slug = models.SlugField(null=True)
-    section = models.ForeignKey('Section', verbose_name='Раздел', on_delete=models.SET_NULL, null=True)
-    
-    class Meta:
-        verbose_name = 'Подраздел'
-        verbose_name_plural = 'Подразделы'
-    
-    def __str__(self):
-        return self.name
-    
-    def items_count(self):
-        return Item.objects.filter(subsection=self).count()
+        return Section.objects.all().filter(parent=self).count()
     
     def items(self):
-        return Item.objects.filter(subsection=self)
+        return Item.objects.filter(section=self)
+    
+    def items_count(self):
+        return Item.objects.filter(section=self).count()
     
     def paginator(self):
         return Paginator(self.items(), 3)
+
 
 class Article(models.Model):
     title = models.CharField(max_length=50, verbose_name='Заголовок')
     text = models.TextField(verbose_name='Текст')
     published_at = models.DateTimeField(verbose_name='Дата публикации')
-    subsection = models.ForeignKey('Subsection', verbose_name='Показать товары из секции', on_delete=models.SET_NULL, null=True)
+    section = models.ForeignKey('Section', verbose_name='Показать товары из подраздела',
+                                on_delete=models.SET_NULL, null=True)
     
     class Meta:
         verbose_name = 'Статья'
@@ -70,10 +62,8 @@ class Article(models.Model):
         return self.title
     
     def items(self):
-        return Item.objects.filter(subsection=self.subsection)
+        return Item.objects.filter(section=self.section)
     
-    def paginator(self):
-        return self.subsection.paginator()
 
 class Review(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, verbose_name='Товар')
@@ -85,21 +75,19 @@ class Review(models.Model):
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
 
-class Customer(models.Model):
-    user = models.OneToOneField(User, unique=True, on_delete=models.CASCADE, verbose_name='Пользователь')
-    
+class User(AbstractUser):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-
+        
     def __str__(self):
-        return self.user.username
+        return self.username
     
     def cart(self):
         return Cart.objects.filter(user=self)
-    
+        
 class Cart(models.Model):
-    user = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name='Пользователь')
+    user = models.ForeignKey('User', on_delete=models.CASCADE, verbose_name='Пользователь', null=True)
     item = models.ForeignKey(Item, on_delete=models.CASCADE, verbose_name='Товар')
     quantity = models.IntegerField(verbose_name='Количество', default=0)
     
@@ -110,7 +98,7 @@ class Cart(models.Model):
         return f'{self.item.name} ({self.quantity}шт.)'
 
 class Order(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name='Заказчик')
+    user = models.ForeignKey('User', on_delete=models.CASCADE, verbose_name='Заказчик', null=True)
     order_time = models.DateTimeField(verbose_name='Время заказа')
 
     class Meta:

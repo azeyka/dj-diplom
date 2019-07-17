@@ -4,7 +4,7 @@ from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.models import User
 from datetime import datetime
 
-from shop.models import Section, Subsection, Item, Article, Review, Customer, Cart, Order, OderedItem
+from shop.models import Section, Item, Article, Review, User, Cart, Order, OderedItem
 from shop.forms import ReviewForm, LoginForm, SignupForm
 
 
@@ -36,11 +36,11 @@ def subsection_view(request, section_name, subsection_name=None):
     }
     
     if subsection_name:
-        subsection = get_object_or_404(Subsection, slug=subsection_name)
+        subsection = get_object_or_404(Section, slug=subsection_name)
         curr_page = request.GET.get('page') or 1
         curr_items = subsection.paginator().get_page(curr_page)
         
-        template = 'subsection_page.html'
+        template = 'section.html'
         context['subsection'] = subsection
         context['items'] = curr_items
     
@@ -115,8 +115,8 @@ def signup(request):
             username = form.cleaned_data['email']
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            user = User.objects.create_user(username, email, password)
-            Customer.objects.create(user=user)
+            user = User.objects.create_user(email=email, password=password, username=username)
+            # User.objects.create(email=email, password=password, username=username)
             return redirect('/login/')
     
     return render(
@@ -134,8 +134,7 @@ def logout(request):
 def cart_view(request):
     context = {}
     if request.user.is_authenticated:
-        user = Customer.objects.get(user=request.user)
-        context['cart'] = user.cart()
+        context['cart'] = request.user.cart()
     else:
         return redirect('/login/')
     
@@ -148,7 +147,7 @@ def cart_view(request):
 def add_to_cart(request):
     if request.user.is_authenticated:
         item = Item.objects.get(id=request.GET.get('id'))
-        user = Customer.objects.get(user=request.user)
+        user = request.user
         redirect_to = request.GET.get('from') or '/cart'
         for cart_item in user.cart():
             if cart_item.item == item:
@@ -162,8 +161,8 @@ def add_to_cart(request):
         return redirect('/login')
 
 def make_order(request):
-    user = Customer.objects.get(user=request.user)
-    order = Order.objects.create(customer=user, order_time=datetime.now())
+    user = request.user
+    order = Order.objects.create(user=user, order_time=datetime.now())
     for item in user.cart():
         OderedItem.objects.create(item=item.item, order=order, quantity=item.quantity)
 

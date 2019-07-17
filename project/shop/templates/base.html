@@ -36,19 +36,17 @@
                             <li class="nav-item dropdown {% if section and section_ == section %}active{% endif %}">
                                 <a class="nav-link dropdown-toggle" href="#" id="dropdown01"#}
                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {{ section_ }}</a>
+                                    {{ section_.name }}</a>
                                 <div class="dropdown-menu" aria-labelledby="dropdown01">
 
-                                    {% for subsection in all_subsections %}
-                                        {% if subsection.section == section_ %}
-                                            <a class="dropdown-item" href="/catalog/{{ section_.slug }}/{{ subsection.slug }}">
-                                                {{ subsection }}</a>
-                                        {% endif %}
+                                    {% for subsection in section_.subsections %}
+                                        <a class="dropdown-item" href="/catalog/{{ section_.slug }}/{{ subsection.slug }}">
+                                            {{ subsection }}</a>
                                     {% endfor %}
 
                                 </div>
                             </li>
-                        {% else %}
+                        {% elif not section_.parent %}
                             <li class="nav-item {% if section_ == section %}active{% endif %}" >
                                 <a class="nav-link" href="/catalog/{{ section_.slug }}">{{ section_ }}</a>
                             </li>

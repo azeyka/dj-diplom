@@ -1,4 +1,0 @@
-Для запуска необходимо:
-
-1. Установить Django Widget Tweaks: pip install django-widget-tweaks
-2. При добавлении раздела/товара необходимо добавить

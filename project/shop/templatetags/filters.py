@@ -11,5 +11,5 @@ def convert_stars(stars):
     return '★'*stars
 
 @register.filter
-def get_from_session(session, id):
+def get_page_from_session(session, id):
     return session[id]

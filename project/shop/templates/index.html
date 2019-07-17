@@ -14,8 +14,8 @@
             </div>
 
             <div class="container mb-5">
-                {% with page=request.session|get_from_session:article.id %}
-                    {% with items=article.paginator|get_page:page subsection=article.subsection section=article.subsection.section %}
+                {% with page=request.session|get_page_from_session:article.id %}
+                    {% with items=article.section.paginator|get_page:page subsection=article.section.parent section=article.section %}
                         {% include 'subsection_elements.html' %}
                     {% endwith %}
                 {% endwith %}

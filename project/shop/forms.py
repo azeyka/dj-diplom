@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.models import User
+from .models import User
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
@@ -23,7 +23,7 @@ class SignupForm(forms.Form):
     email = forms.CharField(widget=forms.EmailInput(), max_length=20, label='E-mail')
     password = forms.CharField(widget=forms.PasswordInput(), label='Пароль')
     password_repeat = forms.CharField(widget=forms.PasswordInput(), label='Подтвердите пароль')
-    
+
     def clean_email(self):
         email = self.cleaned_data.get('email')
         
