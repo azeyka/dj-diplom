@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ subsection }}{% endblock %}
+
+{% block content %}
+    <main role="main">
+        <div class="container">
+            <h1>{{ subsection }}</h1>
+            {% include 'subsection_elements.html' %}
+        </div>
+    </main>
+{% endblock %}
